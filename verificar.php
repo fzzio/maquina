@@ -47,8 +47,12 @@
       try {
         $response = (new FacebookRequest(
           $session, 'POST', '/me/feed', array(
-            'link' => 'www.example.com',
-            'message' => 'User provided message'
+            'link' => 'www.220V.ec/campus-party/',
+            'picture' => "www.220V.ec/campus-party/assets/img/200x200.jpg",
+            'name' => 'La energía del campus party',
+            //'caption' => 'este es el caption',
+            'description' => 'La Energía del Campus Party. Escanea tu código de barras en la 220V energy machine para obtener una botella gratis de 220V en el Campus Party.',
+            'message' => 'Me recargué de energía con 220V para seguir disfrutando del #CPQuito4',
           )
         ))->execute()->getGraphObject();
 

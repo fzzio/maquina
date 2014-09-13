@@ -114,11 +114,13 @@ function conectarFacebook(){
                     dataType: "json",
                     success: function (respuesta) {
                         if(respuesta.codigo == 1){
-                            var html = "<p>" + response.name + "</p><br/><img src='libs/barcodegen/test_1D.php?text=" + respuesta.codigobarras + "' alt='barcode' class='img-responsive'  />";
-                            $("#usuario").html(html);
-
+                            
+                            $("#nombre-usuario").html(response.name);
+                            $("#img-barras").attr( "src", "libs/barcodegen/test_1D.php?text=" + respuesta.codigobarras );
+                            $("#seccion-registro").hide();
+                            $("#seccion-codigo").show();
                         }else{
-                            $("#usuario").html("<p>No se pudo generar el código</p>");
+                            //$("#usuario").html("<p>No se pudo generar el código</p>");
                         }
                         //console.log(respuesta.precio);
                     }, 
@@ -145,6 +147,8 @@ function conectarFacebook(){
 function logoutFB(){
     FB.logout(function(response) {
       // user is now logged out
+        $("#seccion-registro").show();
+        $("#seccion-codigo").hide();
     });
 }
 
