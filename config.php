@@ -18,4 +18,10 @@
 	$cfg_user = "energycl_cpquito";
 	$cfg_pass = "cpquito";
 	$cfg_base = "energycl_maquinacpquito";
+
+	// Configuraciones Twitter
+
+	$twconfig['consumer'] = "G7tTWgN3Bgiby5u97hcNKyRed";
+	$twconfig['secret'] = "6ZAsrMJrjk0OqtT4Qpj7Xh8c9xolDTEpaBKHvWhwjUh3sdF16m";
+	$twconfig['callback'] = "http://www.220v.ec/campus-party/cb.php";
 ?>

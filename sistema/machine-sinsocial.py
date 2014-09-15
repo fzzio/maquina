@@ -5,6 +5,7 @@ import json, urllib, urllib2, re, time, serial
 
 totalMotores = 20
 productoXMotor = 5
+motorInicial = 10
 
 listaProducto = [productoXMotor for i in range(totalMotores)]
 totalBotellas = listaProducto.__len__() * 5
@@ -41,16 +42,16 @@ def cargarDeArchivo():
     arregloDatos = archivo220v.readline().split(',')
     archivo220v.close()
     arregloDatos.pop()
-    for x in xrange(0,totalMotores):
+    for x in xrange(motorInicial, totalMotores):
         listaProducto[x] = int(arregloDatos[x])
     return True
 
 def resetearArchivo():
-     #almacenamos en archivo de backup
+    #almacenamos en archivo de backup
     contenidoActual = ''
     for y in xrange(0,listaProducto.__len__() ):
         contenidoActual += "%d," % productoXMotor
-    #print contenidoActual
+    print contenidoActual
     archivo220v = open('./producto220v.txt', 'w')
     archivo220v.write(contenidoActual)
     archivo220v.close()
@@ -83,7 +84,7 @@ while True:
         #Enviar codigo por usb, esperar ack
         #2 bandejas de 10 motores cada uno. 5 Productos por motor
 
-        i = 0
+        i = motorInicial
         reintentoXMotor = 0
         while i < listaProducto.__len__():
             stringMotor = ("%d" % (i + 1)).rjust(2, '0')
@@ -140,7 +141,7 @@ while True:
             print "\t...¡Alerta!: La máquina esta vacía. Recargando..."
             #se manda en caso de ser necesario una señal al beagle
             resetearArchivo()
-            i = 0
+            i = motorInicial
             continue
 
         pass
