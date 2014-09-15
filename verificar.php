@@ -90,7 +90,7 @@
       $posteado = publicarEnMuro($existeCodigo);
 
       //print_r($existeCodigo );
-      if($existeCodigo["activado"]){
+      /*if($existeCodigo["activado"]){
         $arrExiste = array (
           'codigo'=> 2,
           'mensaje'=>"Código activado previamente",
@@ -99,7 +99,7 @@
           'nombre' => $existeCodigo["name"],
           'posteado' => $posteado
         );
-      }else{
+      }else{*/
         $sqlActivar = "
           UPDATE usuario_codigo
           SET activado=1
@@ -114,7 +114,7 @@
           'nombre' => $existeCodigo["name"],
           'posteado' => $posteado
         );
-      }
+      /*}*/
 
 		}else{
 			$arrExiste = array (

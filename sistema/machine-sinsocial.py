@@ -12,6 +12,7 @@ totalBotellas = listaProducto.__len__() * 5
 
 datoOk = "\x06"
 datoNo = "\x15"
+datoDespachado = "\x16"
 
 # configure the serial connections (the parameters differs on the device you are connecting to)
 ser = serial.Serial(
@@ -30,13 +31,13 @@ def grabarArchivo():
     for y in xrange(0,listaProducto.__len__() ):
         contenidoActual += "%d," % listaProducto[y]
     #print contenidoActual
-    archivo220v = open('producto220v.txt', 'w')
+    archivo220v = open('./producto220v.txt', 'w')
     archivo220v.write(contenidoActual)
     archivo220v.close()
     return True
 
 def cargarDeArchivo():
-    archivo220v = open('producto220v.txt', 'r')
+    archivo220v = open('./producto220v.txt', 'r')
     arregloDatos = archivo220v.readline().split(',')
     archivo220v.close()
     arregloDatos.pop()
@@ -50,7 +51,7 @@ def resetearArchivo():
     for y in xrange(0,listaProducto.__len__() ):
         contenidoActual += "%d," % productoXMotor
     #print contenidoActual
-    archivo220v = open('producto220v.txt', 'w')
+    archivo220v = open('./producto220v.txt', 'w')
     archivo220v.write(contenidoActual)
     archivo220v.close()
 
@@ -65,7 +66,11 @@ while True:
     print listaProducto
     print '----------------------------------'
     #code = raw_input('Código: ') 
-    code = int( raw_input('\t\tCódigo: ') )
+    entrada = raw_input('\t\tCódigo: ')
+    try:
+        code = int(entrada)
+    except ValueError:
+        continue
 
     #print code
 
@@ -78,16 +83,18 @@ while True:
         #Enviar codigo por usb, esperar ack
         #2 bandejas de 10 motores cada uno. 5 Productos por motor
 
-        for i in xrange(0, listaProducto.__len__() ):
+        i = 0
+        reintentoXMotor = 0
+        while i < listaProducto.__len__():
+            stringMotor = ("%d" % (i + 1)).rjust(2, '0')
+
             if( listaProducto[i] > 0 and listaProducto[i] <= 5):
                 #Existe producto, hago peticion al motor
-                stringMotor = ("%d" % (i + 1)).rjust(2, '0')
-
                 print ('\tDisponible en motor  #%s: %d botellas.' % ( stringMotor , listaProducto[i]))
                 print ('\tSolicitando al motor  #%s...' % ( stringMotor ))
 
-                #stringTramaMotor = "\xee\x01\x55\xaa"
-                stringTramaMotor =  ( r"\xee\x%s\x55\xaa" % stringMotor ).decode('string-escape')
+                #stringTramaMotor = "\xee\x13\x55\xaa"
+                stringTramaMotor =  ( "\xee" + chr(i + 1) + "\x55\xaa" ).decode('string-escape')
                 print ('\tLa trama es: %s' % ( stringTramaMotor ))
 
                 ser.write(stringTramaMotor )
@@ -96,31 +103,49 @@ while True:
                 #print inp.encode("hex") #gives me the correct bytes, each on a newline 
 
                 if datoOk == inp:
-                    print "\tDespachado"
-                    print "\t****Gracias " + "Campusero" + " por asistir.****"
-                    listaProducto[i] = listaProducto[i] - 1
+                    print "\tTrama entregada, esperando confirmación de motor..."
+                    inp2 = ser.read() #read a byte
 
-                    grabarArchivo()
+                    if datoDespachado == inp2:
+                        print "\tDespachado"
+                        print "\t****Gracias " + "Campusero" + " por asistir.****"
+                        listaProducto[i] = listaProducto[i] - 1
+                        grabarArchivo()
+                        i = i + 1
+                    else:
+                        print "\tError en despacho, intentaremos en siguiente motor..."
+                        i = i + 1
+                        continue
 
                 elif datoNo == inp:
-                    print "\tError en despacho, intentaremos en siguiente motor..."
+                    print "\tError en comunicacion, reenviando trama..."
+                    reintentoXMotor = reintentoXMotor + 1
+                    if reintentoXMotor >= 3:
+                        print "\tError en comunicación, desechando..."
+                        break
+
                     continue
+
+                else:
+                    print "\tRecibió ruido, desechando..."
+                    break
 
                 break
             elif(listaProducto[i] == 0 and ( listaProducto.__len__()-1 ) != i ):
                 print "\tColumna #%s vacia, cambiando siguiente motor..." % (stringMotor)
+                i = i + 1
                 continue
             
 
-            print "\t¡Alerta!: La maquina esta vacía. Recargando..."
+            print "\t...¡Alerta!: La máquina esta vacía. Recargando..."
             #se manda en caso de ser necesario una señal al beagle
             resetearArchivo()
-        
+            i = 0
+            continue
+
         pass
 
-    elif code == 2:
-        # TODO mostrar en algún lugar que premio ya fue reclamado
-
-        print 'Gracias por asistir, previamente has retirado tu producto'
+    else:
+        pass
 
     print '----------------------------------\n'

@@ -70,8 +70,14 @@
                 <button class="btn-logout btn btn-warning" id="logout">Logout</button>
               </div>
             </div>
+          </div>
 
-
+          <div class="container">
+            <div class="row">
+              <div class="col-md-12 text-center">
+                <h4 class="titularObtener text-center">Será publicado en facebook tu asistencia al evento.</h4>
+              </div>
+            </div>
           </div>
         
       </div>
