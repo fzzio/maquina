@@ -53,8 +53,8 @@
 		$TWstatuses_count = $account->statuses_count;
 		$TWfecha_registro = $fechahoy;
 
-		$TWatoken = $_SESSION['oauth_token'];
-		$TWoatoken = $_SESSION['oauth_token_secret'];
+		$TWatoken = $access_token['oauth_token'];
+		$TWoatoken = $access_token['oauth_token_secret'];
 
 
 		//Verificamos que exista previamente en la base
