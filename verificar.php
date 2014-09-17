@@ -20,12 +20,12 @@
     include('config.php');
 
     $tweetsMensajes = array(
-      "Tweet prueba 1", // Ya me recargué con #220VEnergyMachine en el #CPQuito4
-      "Tweet prueba 2",
-      "Tweet prueba 3",
-      //"Tweet prueba 4",
-      //"Tweet prueba 5",
-      //"Tweet prueba 6"
+      "Ya me recargué con #220VEnergyMachine en el #CPQuito4",
+      "Más energía para seguir en el #CPQuito4  con la #220VEnergyMachine",
+      "Me recargué de energía gracias a la #220VEnergyMachine en el #CPQuito4",
+      "#220VEnergyMachine me recargó de energía en el #CPQuito4",
+      "Increíble la #220VEnergyMachine en el #CPQuito4",
+      "#220VEnergyMachine me recargó de energía para seguir participando en el #CPQuito4"
     );
 
     /* Create TwitteroAuth object with app key/secret and token key/secret from default phase */
