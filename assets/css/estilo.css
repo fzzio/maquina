@@ -72,6 +72,24 @@ body{
 	color: #FFFFFF;
 }
 
+.btn-twitter-2{
+	border-radius: 0px !important;
+	background-color: #ffd204 !important;
+	color: #091d87 !important;
+	background-image: none !important;
+	padding-bottom: 10px !important;
+	padding-top: 10px !important;
+	padding-left: 10px !important;
+	padding-right: 10px !important;
+	text-shadow: none !important;
+}
+.btn-twitter-2:hover, .btn-twitter-2:active, .btn-twitter-2:focus{
+	background-image: none !important;
+	background-color: #ffa904 !important;
+	color: #091d87 !important;
+	border-radius: 0px !important;
+}
+
 /*.btn-login{
 	background-image: url('../img/Boton-FConnect.png'); 
 	background-repeat: no-repeat;
@@ -118,9 +136,11 @@ body{
 .titularEnergia{
 	color: #ffd204;
 	text-transform: uppercase;
+	font-size: 25px;
 }
 .copyRecargate{
 	color: #ffffff;
+	font-size: 20px;
 }
 .usuario{
 	font-family:"Newtown Italic";
@@ -149,6 +169,7 @@ body{
 		width: 100%;
 		height: 30px;
 	}
+
 }
 
 /* Medium devices (desktops, 992px and up) */
@@ -159,4 +180,39 @@ body{
 /* Large devices (large desktops, 1200px and up) */
 @media (min-width: @screen-lg-min) { 
 
+}
+
+/* Large desktop */
+@media (min-width: 1200px) {
+
+}
+
+/* Portrait tablet to landscape and desktop */
+@media (min-width: 768px) and (max-width: 979px) {
+
+}
+
+/* Landscape phone to portrait tablet */
+@media (max-width: 767px) {
+	.copyRecargate{
+		font-size: 18px;
+	}
+	.usuario{
+		font-size: 18px;
+	}
+	.titularObtener{
+		font-size: 15px;
+	}
+}
+/* Landscape phones and down */
+@media (max-width: 480px) {
+	.copyRecargate{
+		font-size: 18px;
+	}
+	.usuario{
+		font-size: 18px;
+	}
+	.titularObtener{
+		font-size: 15px;
+	}	
 }

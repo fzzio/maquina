@@ -1,72 +1,59 @@
 <?php
   session_start();
+  error_reporting(E_ALL);
 
-  include("config.php");
-  include('libs/MySql.Class.php');
-  include("funciones.php");
+  require_once('config.php');
+  require_once('libs/twitteroauth/twitteroauth.php');
+  require_once('libs/MySql.Class.php');
+  require_once('funciones.php');
 
-  // Must pass session data for the library to work (only if not already included in your app)
-   
-  // Define the root directoy
-  define( 'ROOT', dirname( __FILE__ ) . '/' );
-   
-  // Autoload the required files
-  require_once( ROOT . 'libs/autoload.php' );
-   
-  use Facebook\FacebookRequest;
-  use Facebook\GraphObject;
-  use Facebook\FacebookSession;
-  use Facebook\FacebookRequestException;
-  use Facebook\FacebookRedirectLoginHelper;
-
-	$db = array(
-		'host'=>$cfg_host,
-		'user'=>$cfg_user,
-		'pass'=>$cfg_pass,
-		'name'=>$cfg_base
-	);
-
-  FacebookSession::setDefaultApplication( $fbconfig['appid'], $fbconfig['secret']);
+  $db = array(
+    'host'=>$cfg_host, //'Ya me recargué con #220VEnergyMachine en el #CPQuito4'
+    'user'=>$cfg_user,
+    'pass'=>$cfg_pass,
+    'name'=>$cfg_base
+  );
 
 
 
-  function publicarEnMuro($usuario){
-    
-    $session = new FacebookSession( $usuario["token_largo"] );
-    // Validate the access_token to make sure it's still valid
-    /*try {
-      if ( ! $session->validate() ) {
-        $session = null;
-      }
-    } catch ( Exception $e ) {
-      // Catch any exceptions
-      $session = null;
-    }*/
+  function publicarEnTwitter($usuario){
+    include('config.php');
 
-    if($session) {
-      try {
-        $response = (new FacebookRequest(
-          $session, 'POST', '/me/feed', array(
-            'link' => 'www.220V.ec/campus-party/',
-            'picture' => "www.220V.ec/campus-party/assets/img/200x200.jpg",
-            'name' => 'La energía del campus party',
-            //'caption' => 'este es el caption',
-            'description' => 'La Energía del Campus Party. Escanea tu código de barras en la 220V energy machine para obtener una botella gratis de 220V en el Campus Party.',
-            'message' => 'Me recargué de energía con 220V para seguir disfrutando del #CPQuito4',
-          )
-        ))->execute()->getGraphObject();
+    $tweetsMensajes = array(
+      "Tweet prueba 1", // Ya me recargué con #220VEnergyMachine en el #CPQuito4
+      "Tweet prueba 2",
+      "Tweet prueba 3",
+      //"Tweet prueba 4",
+      //"Tweet prueba 5",
+      //"Tweet prueba 6"
+    );
 
-        //echo "Posted with id: " . $response->getProperty('id');
+    /* Create TwitteroAuth object with app key/secret and token key/secret from default phase */
+    /*$access_token = array(
+      "oauth_token" => $usuario["atoken"],
+      "oauth_token_secret" => $usuario["oatoken"],
+      "user_id"=> $usuario["id_str"],
+      "screen_name"=> $usuario["screen_name"]
+    );
+    $_SESSION['access_token'] = $access_token;*/
+
+    $connection = new TwitterOAuth($twconfig['consumer'], $twconfig['secret'], $usuario["atoken"], $usuario["oatoken"]);
+
+    //$content = $connection->get('account/verify_credentials');
+
+    for ($i=0; $i < count($tweetsMensajes); $i++) { 
+      $content = $connection->post('statuses/update', array('status' => $tweetsMensajes[$i]) );
+      
+      if( isset($content->errors) ){
+        //echo "duplicado";
+        continue;
+      }else{
+        //echo "no duplicado";
+        //break;
         return true;
-
-      } catch(FacebookRequestException $e) {
-        //echo "Exception occured, code: " . $e->getCode();
-        //echo " with message: " . $e->getMessage();
-
-        return false;
       }
+      //dump($content);
     }
-
     return false;
 
   }
@@ -76,32 +63,23 @@
 	$arrExiste = array ();
 
 	if (isset($_POST["txtCodigo"]) && !empty($_POST["txtCodigo"])){
-    $codigoObtenido = str_pad($_POST["txtCodigo"], 4, "0", STR_PAD_LEFT);
+    $codigoObtenido = str_pad($_POST["txtCodigo"], 5, "0", STR_PAD_LEFT);
 
 
 		$sqlExisteCodigo = "
-      SELECT uc.id as idregistro, uc.codigobarras AS codigobarras, uc.activado as activado, fb. * 
-      FROM usuario_codigo uc, fbuser fb
-      WHERE fb.fbuser = uc.fbuser_id
+      SELECT uc.id as idregistro, uc.codigobarras AS codigobarras, uc.activado as activado, tw. * 
+      FROM usuario_codigo_tw uc, twuser tw
+      WHERE tw.id_str = uc.twuser_id
       AND uc.codigobarras = '" . $codigoObtenido . "'";
 		$existeCodigo = @MySql::getInstance()->getSingleRow($sqlExisteCodigo);
 
 		if($existeCodigo) {
-      $posteado = publicarEnMuro($existeCodigo);
 
-      //print_r($existeCodigo );
-      /*if($existeCodigo["activado"]){
-        $arrExiste = array (
-          'codigo'=> 2,
-          'mensaje'=>"Código activado previamente",
-          'codigobarras'=> $existeCodigo["codigobarras"],
-          'fbuserid' => $existeCodigo["fbuser"],
-          'nombre' => $existeCodigo["name"],
-          'posteado' => $posteado
-        );
-      }else{*/
+
+      $posteado = publicarEnTwitter($existeCodigo);
+
         $sqlActivar = "
-          UPDATE usuario_codigo
+          UPDATE usuario_codigo_tw
           SET activado=1
           WHERE id = ". $existeCodigo["idregistro"];
         $activado = @MySql::getInstance()->updateRecord($sqlActivar);
@@ -110,11 +88,10 @@
           'codigo'=> 1,
           'mensaje'=>"Código encontrado",
           'codigobarras'=> $existeCodigo["codigobarras"],
-          'fbuserid' => $existeCodigo["fbuser"],
+          'twuserid' => $existeCodigo["id_str"],
           'nombre' => $existeCodigo["name"],
           'posteado' => $posteado
         );
-      /*}*/
 
 		}else{
 			$arrExiste = array (

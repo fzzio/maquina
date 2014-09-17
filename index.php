@@ -2,6 +2,7 @@
     session_start();
     include("config.php");
     include('libs/MySql.Class.php');
+    require_once('funciones.php');
 
     $db = array(
         'host'=>$cfg_host,
@@ -9,6 +10,27 @@
         'pass'=>$cfg_pass,  
         'name'=>$cfg_base
     );
+    $usuarioTW = 0;
+
+    if (isset($_GET["c"]) && !empty($_GET["c"])) {
+      
+      $idcodigobarras = str_pad($_GET["c"], 5, "0", STR_PAD_LEFT);
+      $sqlExisteCodigo = "
+        SELECT *
+        FROM usuario_codigo_tw
+        WHERE codigobarras='" . $idcodigobarras . "'";
+      $existeCodigo = @MySql::getInstance()->getSingleRow($sqlExisteCodigo);
+
+      //dump($existeCodigo);
+
+      $sqlObtenerUltimoUsuario = "
+        SELECT *
+        FROM twuser t
+        WHERE t.id_str='" . $existeCodigo["twuser_id"] . "'";
+      $usuarioTW = @MySql::getInstance()->getSingleRow($sqlObtenerUltimoUsuario);
+    }
+
+    //dump($usuarioTW);
 ?>
 <!DOCTYPE html>
 <html>
@@ -19,12 +41,25 @@
       <title>Registro</title>
       <link rel="stylesheet" type="text/css" href="assets/css/bootstrap.min.css">
       <link rel="stylesheet" type="text/css" href="assets/fonts/font-newtow.css">
+      <link rel="stylesheet" type="text/css" href="assets/css/font-awesome.css">
+      <link rel="stylesheet" type="text/css" href="assets/css/social-buttons.css">
       <link rel="stylesheet" type="text/css" href="assets/css/estilo.css">
+
+    <style type="text/css">
+      <?php if ($usuarioTW): ?>
+          .img-logo{
+            height: 100px;
+          }
+      <?php else: ?>
+          .img-logo{
+            height: 150px;
+          }
+      <?php endif ?>
+    </style>
   </head>
   <body>
     <div class="v-center-contenedor">
       <div class="v-center-contenido">
-
           <div class="container">
             <div class="row">
               <div class="col-md-12">
@@ -33,74 +68,65 @@
             </div>
           </div>
 
-          <div class="container" id="seccion-registro">
-            <div class="row">
-              <div class="col-md-12 text-center">                
-                <h1 class="titularEnergia">
-                  La energía del<br /> Campus Party
-                </h1>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-md-12">
-                <h3 class="titularObtener text-center">Obtener el código de barras:</h3>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-md-12 text-center">
-                <?php /* <button class="btn-login btn btn-primary" id="login">&nbsp;</button> */ ?>
-                <img src="assets/img/Boton-FConnect.png" class="img-responsive img-centrar btn-login" id="login" />
-              </div>
-            </div>
-          </div>
+          <?php if ($usuarioTW): ?>
 
-          <div class="container" id="seccion-codigo">
-            <div class="row">
-              <div class="col-md-12">
-                <h3 class="copyRecargate text-center">Recárgate de energía <span class="nombre-usuario" id="nombre-usuario"></span> mostrando el código de barras en el lector del dispensador.</h3>
+            <div class="container" id="seccion-codigo" style="display: block;">
+              <div class="row">
+                <div class="col-md-12">
+                  <h3 class="copyRecargate text-center">Recárgate de energía <span class="nombre-usuario" id="nombre-usuario"><?php echo $usuarioTW["name"]; ?></span> mostrando el código de barras en el lector del dispensador.</h3>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12">
+                  <img src="libs/barcodegen/test_1D.php?text=<?php echo $existeCodigo['codigobarras']; ?>" class="img-responsive img-centrar" id="img-barras" />
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12 text-center">
+                  <a href="limpiar.php" class="btn-logout btn btn-warning" id="logout">Logout</a>
+                </div>
               </div>
             </div>
-            <div class="row">
-              <div class="col-md-12">
-                <img src="" class="img-responsive img-centrar" id="img-barras" />
+
+          <?php else: ?>
+            <div class="container" id="seccion-registro">
+              <div class="row">
+                <div class="col-md-12 text-center">                
+                  <h1 class="titularEnergia">
+                    La energía del<br /> Campus Party
+                  </h1>
+                </div>
               </div>
-            </div>
-            <div class="row">
-              <div class="col-md-12 text-center">
-                <button class="btn-logout btn btn-warning" id="logout">Logout</button>
+              <div class="row">
+                <div class="col-md-12">
+                  <h3 class="titularObtener text-center">Obtener el código de barras:</h3>
+                </div>
               </div>
-            </div>
-          </div>
+              <div class="row">
+                <div class="col-md-12 text-center">
+                  <a href="redirect.php" class="btn btn-twitter btn-twitter-2">
+                    <i class="fa fa-twitter"></i> | Iniciar con Twitter
+                  </a>
+                </div>
+
+              </div>
+            </div>            
+          <?php endif ?>
+
+
 
           <div class="container">
             <div class="row">
               <div class="col-md-12 text-center">
-                <h4 class="titularObtener text-center">Será publicado en facebook tu asistencia al evento.</h4>
+                <h4 class="titularObtener text-center">Será publicado en twitter tu asistencia al evento.</h4>
               </div>
             </div>
           </div>
         
       </div>
     </div>
-    <div id="fb-root"></div>
-      <script src="https://connect.facebook.net/en_US/all.js"></script>
-      <script type="text/javascript">
-         window.fbAsyncInit = function() {
-            FB.init ({
-               appId : "<?php echo $fbconfig['appid']; ?>", //Your facebook APP here
-               status : true,
-               xfbml : true,
-               cookie : true, // enable cookies to allow the server to access the session
-            });
-           
-            FB.getLoginStatus(function(response) {
-              statusChangeCallback(response);
-            });
-         }
-      </script>
-
     <script type="text/javascript" src="assets/js/jquery-1.11.1.min.js"></script>
     <script type="text/javascript" src="assets/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="assets/js/script.js"></script>
+    <script type="text/javascript" src="assets/js/script-tw.js"></script>
   </body>
 </html>

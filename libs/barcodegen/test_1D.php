@@ -24,7 +24,8 @@ try {
     $code->setThickness(30); // Thickness
     $code->setForegroundColor($color_black); // Color of bars
     $code->setBackgroundColor($color_white); // Color of spaces
-    $code->setFont($font); // Font (or 0)
+    //$code->setFont($font); // Font (or 0)
+    $code->setFont(0); // 0 para no label
     $code->parse($text); // Text
 } catch(Exception $exception) {
     $drawException = $exception;

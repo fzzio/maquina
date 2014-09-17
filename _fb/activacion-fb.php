@@ -30,7 +30,7 @@
       <div class="row">
         <div class="col-md-12">
       
-            <form role="form" method="post" action="verificar-tw.php">
+            <form role="form" method="post" action="verificar.php">
               <div class="form-group">
                 <label for="txtCodigo">Codigo</label>
                 <input type="text" class="form-control" name="txtCodigo" id="txtCodigo" placeholder="Codigo">

@@ -24,6 +24,6 @@
     		break;
   		default:
     		/* Show notification if something went wrong. */
-    		header('Location: index-tw.php'); // @fzzio pilas
+    		header('Location: index.php'); // @fzzio pilas
 	}
 ?>

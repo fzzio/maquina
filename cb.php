@@ -82,7 +82,7 @@
 				WHERE t.id_str='" . $TWid_str . "'";
 			$usuarioDatos = @MySql::getInstance()->getSingleRow($sqlObtenerUltimoUsuario);
 
-			$idcodigobarras = str_pad($usuarioDatos["id"] . "1", 5, "0", STR_PAD_LEFT); //el ultimo 1 es para TW
+			$idcodigobarras = str_pad($usuarioDatos["id"], 5, "0", STR_PAD_LEFT); //el ultimo 1 es para TW
 			$sqlExisteCodigo = "
 				SELECT *
 				FROM usuario_codigo_tw
@@ -107,7 +107,7 @@
 				'codigobarras'=> $idcodigobarras
 			);
 		}else{
-			$idcodigobarras = str_pad($usuarioDatos["id"] . "1", 5, "0", STR_PAD_LEFT); //el ultimo 1 es para TW
+			$idcodigobarras = str_pad($usuarioDatos["id"], 5, "0", STR_PAD_LEFT); //el ultimo 1 es para TW
 			$sqlExisteCodigo = "
 				SELECT *
 				FROM usuario_codigo_tw
@@ -115,15 +115,13 @@
 				AND twuser_id='" . $TWid_str . "'";
 			$existeCodigo = @MySql::getInstance()->getSingleRow($sqlExisteCodigo);
 		}
-
-
 		
-		header("Location: index-tw.php?c=" . $idcodigobarras);
+		header("Location: index.php?c=" . $idcodigobarras);
 		//dump($_SESSION);
 		//dump($account);
 	}else{
 		//problema
-		header("Location: index-tw.php");
+		header("Location: index.php");
 	}
 
 	/* Remove no longer needed request tokens */
